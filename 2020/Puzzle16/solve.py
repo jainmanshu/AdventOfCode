@@ -27,10 +27,6 @@ def CreateRangeArrays():
 low, high = CreateRangeArrays()
 
 def in_range(x):
-    print(x)
-    a = (low <= x)
-    b = x <= high
-    print([a, low], [b, high])
     return np.any((low <= x) & (x <= high))
 
 def nearByArrayList():
@@ -42,6 +38,7 @@ def nearByArrayList():
     return arrayList
 
 nearbyTicketsList = nearByArrayList()
+print(nearbyTicketsList)
 
 # def findErrorRate():
 #     rate = 0
