@@ -61,11 +61,14 @@ def lowest_point():
                 right = matrix[i][j + 1]
                 neighbours = [upper, right, lower, left]
             if lower_with_adjacent(number, neighbours):
-                risk_point[(i, j)] = number
+                risk_point[(i, j)] = number+1
     return risk_point
 
 
 risk = lowest_point()
+
+part1 = sum(risk.values())
+print('Part 1:', part1)
 
 
 def find_basins(row_pos, col_pos, basin=[], already_seen=[], neighbours={}):
@@ -89,7 +92,7 @@ def find_basins(row_pos, col_pos, basin=[], already_seen=[], neighbours={}):
 
 def part2():
     basin_point = []
-    for k, v in risk.items():
+    for k in risk.keys():
         i, j = k
         if matrix[i][j] != 9:
             basin_len = find_basins(i, j, [], [], {})
