@@ -44,5 +44,30 @@ def solve1():
         continue
     return sum
 
-print('Puzzle 1 : ', solve1())
+def multiply_max(color_dict):
+    mult = 1
+    for v in color_dict.values():
+        mult *= max(v)
+    return mult
+
+def max_count_per_color(games_p):
+    # games_drawing = ['3 blue, 4 red', '1 red 2 green, 6 blue', '2 green']
+    # separate the count by color
+    color_dict = {}
+    for gd in games_p:
+        for game_show in gd.split(', '):
+            count, color = game_show.split(' ')
+            color_dict[color] = color_dict.get(color, []) + [int(count)]
+    return multiply_max(color_dict)
+
+def solve2():
+    # determine in game the color and check whether all games passes or not
+    sum = 0
+    for id, games_played in games_dict.items():
+        sum += max_count_per_color(games_played)
+    return sum
+
+print('Part 1 : ', solve1())
+
+print('Part 2 : ', solve2())
 
