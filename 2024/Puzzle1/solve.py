@@ -1,4 +1,5 @@
 import heapq
+import collections
 
 with open('input_1.txt') as f:
     parsed = f.read().splitlines()
@@ -13,6 +14,20 @@ for line in parsed:
     heapq.heappush(q1, int(n1))
     heapq.heappush(q2, int(n2))
 
+# For Part-2 
+# we can use counter class from defaultdict
+# get the counter from second list
+# loop the first list as key in second
+freq = collections.Counter(q2)
+result2 = 0
+
+for num in q1:
+    if num in freq:
+        result2 += num * freq[num]
+
+print("Answer Puzzle 2:", result2)
+
+# Part - 1
 result1 = 0
 
 while q1 and q2:
@@ -22,4 +37,6 @@ while q1 and q2:
     result1 += abs(num1-num2)
 
 print("Answer Puzzle 1:", result1)
+
+
 
