@@ -66,13 +66,40 @@ def getRating(r, c, visit = set(), target_height = 0):
 
     return score
 
+# v2 using BFS
+def getRating_v2(r, c):
+    score = 0
+    q = collections.deque()
+    count = collections.Counter()
+    count[(r, c)] = 1
+    q.append((r, c))
+    visit = set()
+    visit.add((r, c))
+
+    while len(q) > 0:
+        x, y = q.popleft()
+
+        if matrix[x][y] == 9:
+            score += count[(x, y)]
+
+        for dx, dy in directions:
+            new_x, new_y = x + dx, y + dy
+
+            if 0 <= new_x < ROWS and 0 <= new_y < COLS and matrix[new_x][new_y] == matrix[x][y] + 1 and (new_x, new_y) not in visit:
+                q.append((new_x, new_y))
+                visit.add((new_x, new_y))
+            if 0 <= new_x < ROWS and 0 <= new_y < COLS and matrix[new_x][new_y] == matrix[x][y] + 1:
+                count[(new_x, new_y)] += count[(x, y)]
+                      
+    return score
+
 def part2():
     score = 0
 
     for r in range(ROWS):
         for c in range(COLS):
             if matrix[r][c] == 0:
-                score += getRating(r, c)
+                score += getRating_v2(r, c)
     return score
 
 print('Part 2:', part2())
