@@ -38,3 +38,41 @@ def part1():
     return score
 
 print('Part 1:', part1())
+
+# use DFS to get rating 
+def getRating(r, c, visit = set(), target_height = 0):
+    #  do we visited set
+    # Base cases: Out of bounds or already visited
+    if r < 0 or c < 0 or r >= ROWS or c >= COLS or (r, c) in visit or matrix[r][c] != target_height:
+        return 0
+
+    # If we reach the target value 9, return a score of 1
+    if matrix[r][c] == 9:
+        return 1
+
+    # Mark the current cell as visited
+    visit.add((r, c))
+
+    score = 0  # Initialize the score
+
+   
+    # Explore all directions
+    for dx, dy in directions:
+        x, y = r + dx, c + dy
+        score += getRating(x, y, visit, matrix[r][c] + 1)  # Move to the next height
+
+    # Backtrack: Unmark the current cell
+    visit.remove((r, c))
+
+    return score
+
+def part2():
+    score = 0
+
+    for r in range(ROWS):
+        for c in range(COLS):
+            if matrix[r][c] == 0:
+                score += getRating(r, c)
+    return score
+
+print('Part 2:', part2())
