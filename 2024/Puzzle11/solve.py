@@ -1,3 +1,5 @@
+import collections
+
 with open('input_1.txt') as f:
     stones = f.read().splitlines()[0]
 
@@ -17,23 +19,34 @@ def apply_rule(arr):
             out.append(str(new_stone))
     return out
 
-def apply_rules_v2(arr):
-    count_even, count_odd = 0
-
-    for n in arr:
-        if len(n) % 2 == 0:
-            count_even += 1
-    count_odd = len(arr) - count_even
-
-    return count_odd, count_even * 2
-
-def part1(times):
+def part1():
     out = stones.split(' ')
 
-    for _ in range(times):
+    for i in range(25):
         out = apply_rule(out)
     return len(out)
 
-print('Part 1 :', part1(25))
+print("Part 1:", part1())
 
-print('Part 2 :', part1(75))
+def part2():
+    arr = stones.split(' ')
+    int_arr = list(map(int, arr))
+    freq = collections.Counter(int_arr)
+
+    for _ in range(75):
+        new_freq = collections.Counter()
+        for n in freq.keys():
+            val = freq[n]
+            if n == 0:
+                new_freq[1] += val
+            elif len(str(n)) % 2 == 0:
+                s = str(n)
+                left, right = s[:len(s)//2], s[len(s)//2:]
+                new_freq[int(left)] += val
+                new_freq[int(right)] += val
+            else:
+                new_freq[n*2024] += val
+        freq = new_freq
+    return sum(freq.values())
+
+print('Part 2 :', part2())
