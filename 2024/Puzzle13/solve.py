@@ -69,5 +69,20 @@ def part1():
             tokens += sol[0]*3 + sol[1]*1
     return tokens
                     
-
 print("Part 1:", part1())
+
+def part2():
+    tokens = 0
+    for machine in machines:
+        eq = machine.split("\n")
+        a1, b1, a2, b2, c1, c2 = extract_equation(eq)
+        c1 += 10000000000000
+        c2 += 10000000000000
+        sol = solve_by_elimination_integers(a1, a2, c1, b1, b2, c2)
+        if sol is None:
+            continue
+        else:
+            tokens += sol[0]*3 + sol[1]*1
+    return tokens
+
+print("Part 2:", part2())
