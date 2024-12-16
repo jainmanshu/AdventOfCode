@@ -1,45 +1,117 @@
-from heapq import heappop, heappush
+from itertools import *
+from heapq import *
+from collections import *
 
-with open('input_1.txt') as f:
-    matrix = [list(row) for row in f.read().splitlines()]
+dirs = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
-ROWS = len(matrix)
-COLS = len(matrix[0])
 
-directions = {'N': (-1, 0), 'E': (0, 1), 'S': (1, 0), 'W': (0, -1)}
-
-def part1():
-    start = None
-    goal = None
-
-    for r in range(ROWS):
-        for c in range(COLS):
-            if matrix[r][c] == "S":
-                start = (r, c)
-            elif matrix[r][c] == "E":
-                 goal = (r, c)
-
-    pq = []  # Priority queue
-    heappush(pq, (0, start, "E"))  # (cost, position, previous_direction)
-    visited = {}
-
+def solvep1(G):
+    R = len(G)
+    C = len(G[0])
+    S, E = None, None
+    for r in range(R):
+        for c in range(C):
+            if G[r][c] == "S":
+                S = r, c
+            elif G[r][c] == "E":
+                E = r, c
+    costs = {(S, 0): 0}
+    pq = [(0, (S, 0))]
     while pq:
-        cost, (x, y), prev_dir = heappop(pq)
-        if (x, y) == goal:
-            return cost
-        
-        if (x, y, prev_dir) in visited and visited[(x, y, prev_dir)] <= cost:
+        cost, (s, d) = heappop(pq)
+        if cost != costs[(s, d)]:
             continue
-        visited[(x, y, prev_dir)] = cost
+        if s == E:
+            return cost
+        sr, sc = s
 
-        for dir_key, (dx, dy) in directions.items():
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < ROWS and 0 <= ny < COLS and matrix[nx][ny] != '#':
-                # Calculate the cost
-                turn_cost = 1000 if prev_dir and prev_dir != dir_key else 0
-                move_cost = 1
-                new_cost = cost + turn_cost + move_cost
-                heappush(pq, (new_cost, (nx, ny), dir_key))
-    return -1  # No path found
+        # move forward
+        dr, dc = dirs[d]
+        nbr, nbc = sr + dr, sc + dc
+        if 0 <= nbr < R and 0 <= nbc < C and G[nbr][nbc] != "#":
+            nb = ((nbr, nbc), d)
+            if nb not in costs or costs[nb] > cost + 1:
+                costs[nb] = cost + 1
+                heappush(pq, (cost + 1, nb))
 
-print("Part 1", part1())
+        # rotate
+        for dn in [(d + 1) % 4, (d - 1) % 4]:
+            nb = ((sr, sc), dn)
+            if nb not in costs or costs[nb] > cost + 1000:
+                costs[nb] = cost + 1000
+                heappush(pq, (cost + 1000, nb))
+
+
+def solvep2(G):
+    R = len(G)
+    C = len(G[0])
+    S, E = None, None
+    for r in range(R):
+        for c in range(C):
+            if G[r][c] == "S":
+                S = r, c
+            elif G[r][c] == "E":
+                E = r, c
+
+    cost = solvep1(G)
+    costs = {(S, 0): 0}
+    allp = set()
+
+    P = [(S, 0)]
+    cur = {S}
+
+    def bt(c):
+        s, d = P[-1]
+
+        if c == cost and s == E:
+            allp.update(cur)
+        elif c > cost:
+            return
+
+        sr, sc = s
+        for dn, dcost in [(d, 0), ((d + 1) % 4, 1000), ((d - 1) % 4, 1000)]:
+            dr, dc = dirs[dn]
+            nbr, nbc = sr + dr, sc + dc
+            if (
+                0 <= nbr < R
+                and 0 <= nbc < C
+                and G[nbr][nbc] != "#"
+                and (nbr, nbc) not in cur
+            ):
+                nb = ((nbr, nbc), dn)
+                newcost = c + 1 + dcost
+                if nb not in costs or newcost <= costs[nb]:
+                    costs[nb] = newcost
+
+                    cur.add((nbr, nbc))
+                    P.append(nb)
+                    bt(newcost)
+                    cur.remove((nbr, nbc))
+                    P.pop()
+
+    bt(0)
+    return len(allp)
+
+
+def parse(input_: str):
+    parsed = []
+    for l in input_.split("\n"):
+        l = l.strip()
+        if not l:
+            continue
+        parsed.append(l)
+    return parsed
+
+def run():
+    input_ = open("input_1.txt").read()
+    parsed = parse(input_)
+    p1result = solvep1(parsed)
+    print(p1result)
+
+    parsed = parse(input_)
+    p2result = solvep2(parsed)
+    print(p2result)
+
+
+if __name__ == "__main__":
+    run()
