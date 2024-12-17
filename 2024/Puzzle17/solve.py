@@ -14,9 +14,6 @@ def parse():
 
 register, inst = parse()
 
-# register = {"A": 729, "B":0, "C": 0}
-# inst = [0,1,5,4,3,0]
-
 combo = {
     0: 0,
     1: 1,
@@ -27,7 +24,7 @@ combo = {
     6: register["C"]
 }
 
-def part1():
+def part1(inst):
     out = []
     i = 0
     while i < len(inst):
@@ -66,7 +63,19 @@ def part1():
     
     return out
 
-print("Part 1:", ",".join(str(n) for n in part1()))
+print("Part 1:", ",".join(str(n) for n in part1(inst)))
 
-
+target = inst[::-1]
+def find_a(a=0, depth=0):
+    if depth == len(target):
+        return a
+    for i in range(8):
+        register["A"] = a*8 + i
+        combo[4] = register["A"]
+        output = part1(inst)
+        if output and output[0] == target[depth]:
+            if result := find_a((a*8 + i), depth+1): 
+                return result
+    return 0
+print("Part 2:", find_a())
 
